@@ -16,6 +16,10 @@
 #include <sdc_hci_cmd_status_params.h>
 #include <sdc_hci_vs.h>
 
+#ifdef CONFIG_BT_GAITQ_HCI_VS
+#include <gaitq_hci_vs.h>
+#endif
+
 #include "hci_internal.h"
 #include "ecdh.h"
 
@@ -1215,6 +1219,12 @@ static uint8_t vs_cmd_put(uint8_t const * const cmd,
 		return sdc_hci_cmd_vs_write_remote_tx_power((void *)cmd_params);
 	case SDC_HCI_OPCODE_CMD_VS_SET_AUTO_POWER_CONTROL_REQUEST_PARAM:
 		return sdc_hci_cmd_vs_set_auto_power_control_request_param((void *)cmd_params);
+#endif
+#if defined(CONFIG_BT_GAITQ_HCI_VS)
+	case GAITQ_HCI_OPCODE_CMD_VS_READ_IMAGE_VERSION:
+		*param_length_out += sizeof(struct gaitq_hci_cmd_vs_read_image_version_return);
+		return gaitq_hci_vs_read_image_version((void *)cmd_params,
+							    (void *)event_out_params);
 #endif
 	default:
 		return BT_HCI_ERR_UNKNOWN_CMD;
