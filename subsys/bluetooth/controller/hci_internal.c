@@ -15,6 +15,10 @@
 #include <sdc_hci_cmd_status_params.h>
 #include <sdc_hci_vs.h>
 
+#ifdef CONFIG_BT_GAITQ_HCI_VS
+#include <gaitq_hci_vs.h>
+#endif
+
 #include "hci_internal.h"
 #include "ecdh.h"
 
@@ -1674,6 +1678,12 @@ static uint8_t vs_cmd_put(uint8_t const *const cmd, uint8_t *const raw_event_out
 		case SDC_HCI_OPCODE_CMD_VS_SET_ROLE_PRIORITY:
 			return sdc_hci_cmd_vs_set_role_priority(
 				(sdc_hci_cmd_vs_set_role_priority_t const *) cmd_params);
+#if defined(CONFIG_BT_GAITQ_HCI_VS)
+	case GAITQ_HCI_OPCODE_CMD_VS_READ_IMAGE_VERSION:
+		*param_length_out += sizeof(struct gaitq_hci_cmd_vs_read_image_version_return);
+		return gaitq_hci_vs_read_image_version((void *)cmd_params,
+							    (void *)event_out_params);
+#endif
 	default:
 		return BT_HCI_ERR_UNKNOWN_CMD;
 	}
